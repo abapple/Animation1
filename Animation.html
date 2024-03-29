@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Secrets in The Attic</title>
+    <script>
+        var bg = new Image();
+            bg.src = "bg sprites/HouseBG.png";
+            var fg = new Image();
+            var overlay = new Image();
+            overlay.src = "bg sprites/bgSketch.png";
+            fg.src = "bg sprites/HouseFG.png";
+            var sky = new Image();
+            sky.src = "bg sprites/skySprite.png";
+            var skyX, skyY, skyFrame, skyFrameW, skyFrameH;
+            var rain = new Image();
+            rain.src = "bg sprites/rainSprite.png";
+            var rainX, rainY, rainFrame, rainFrameW, rainFrameH;
+           var mc = new Image();
+           mc.src = "Sprites/Clarissa.png";
+            var mcX, mcY, mcFrame, mcFrameW, mcFrameH;
+            var headlights = new Image();
+            headlights.src = "Sprites/headlights.png";
+            var hY, hX;
+            var butler = new Image();
+            butler.src = "Sprites/butler.png";
+            var title = new Image();
+            title.src = "Sprites/Title Screen.png";
+
+
+            var canvas, ctx;
+            var timing;
+
+
+
+            function initialize(){
+                canvas=document.getElementById('animation');
+                ctx=canvas.getContext('2d');
+
+                timing=0;
+
+                skyX=0;
+                skyY = 0;
+                skyFrame=0;
+                skyFrameW=1400;
+                skyFrameH=800;
+
+                hX = -315;
+                hY = 550;
+
+                mcX=0;
+                mcY = 570;
+                mcFrame=0;
+                mcFrameW=258;
+                mcFrameH=379;
+
+                rainX=0;
+                rainY = 0;
+                rainFrame=0;
+                rainFrameW=1400;
+                rainFrameH=800;
+
+
+                update();
+            }
+
+            function update(){
+                timing++;
+                if(hX < 20)
+                     hX++;
+
+               if(timing%125==0) skyFrame++;
+                    if(skyFrame>2) skyFrame=0;
+            
+                if(timing%16==0)rainFrame++;
+                    if(rainFrame>2) rainFrame=0;
+                    
+                if(timing%9==0){
+                    mcFrame++;
+                    if(mcFrame>7) mcFrame=0;    
+                } 
+
+                if(timing > 1160 && mcX < 890){
+                     mcX++;
+                }
+                // var temp;
+                if(mcX == 890 && timing < 4900){
+                    mcFrame = 8;
+                    // temp = timing;
+                }
+                if(timing > 4900 && mcY > 540){
+                    mcX++;
+                    if (timing%2 == 0) mcY--;
+                }
+                if(mcY == 540){
+                    mcFrame = 9;
+                }
+                
+                requestAnimationFrame(update);
+                draw();
+            }
+
+            function draw(){
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                //all visual displays
+                ctx.beginPath();
+                    //constant changing bg
+                    ctx.drawImage(sky, skyFrame*skyFrameW, 0, skyFrameW, skyFrameH, skyX, skyY, skyFrameW, skyFrameH);
+                    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+                   //drawing of characters / features
+                    ctx.drawImage(mc, mcFrame*mcFrameW, 0, mcFrameW, mcFrameH, mcX, mcY, mcFrameW*.5, mcFrameH*.5);
+                    if(timing > 2560 && timing < 4840){
+                        ctx.drawImage(butler, 1000, 550, butler.width*.5, butler.height*.5)
+                    }
+
+                    //headlights come in
+                    ctx.drawImage(headlights, hX, hY, 400, 229);
+                    //draw the foreground
+                    ctx.drawImage(fg, 0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(rain, rainFrame*rainFrameW, 0, rainFrameW, rainFrameH, rainX, rainY, rainFrameW, rainFrameH);
+
+                ctx.closePath();
+
+                //text Boxes
+                //introducing the car
+                if(timing < 420)
+                    drawSpeechBubble(30, "*rumbling car noises*");
+                    //plays with incoming headlights
+                if(timing > 540 && timing < 1160)
+                   drawSpeechBubble(20, "It was a terrible night with strong winds and heavy rain. Not the conditions to be driving up in the mountains... ");
+                if(timing > 1160 && mcX < 890)
+                    drawSpeechBubble(30, "*footsteps in the mud*");
+                    //mc then walks towards the house
+                if(timing > 2060 && timing < 2360 )
+                    drawSpeechBubble(30, "*knock knock*");
+                if(timing > 2460 && timing < 2760)
+                    drawSpeechBubble(30, "*door opens*");
+                if(timing > 2560 && timing < 3280)
+                    drawSpeechBubble(20, "Butler: Oh! You must be Clarissa. I am so sorry but the event has been cancelled due to the weather...");
+                if(timing > 3280 && timing < 4000)
+                    drawSpeechBubble(20, "Butler: The mansion is facing damage from the storm. We tried to contact you but the phones are out of service...");
+                if(timing > 4000 && timing < 4720)
+                    drawSpeechBubble(20, "Butler: It's much too dangerous for you to drive back now. Please, you are welcome to stay until the storm passes...");
+                
+                if (timing > 5200){
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(title, 0, 0, canvas.width, canvas.height);
+                }
+
+            }
+            //quickly and easily redraws the speech bubbles with the message and assorted size
+            function drawSpeechBubble(size, message){
+                ctx.beginPath();
+                        ctx.fillStyle = "black";
+                        ctx.strokeStyle = "gray";
+                        ctx.lineWidth = "3";
+                        ctx.fillRect(300, 70, 500, 100);
+                        ctx.strokeRect(305, 75, 490, 90);
+                        ctx.fillStyle = "gray";
+                        ctx.font = size + "px Consolas";
+                        printAtWordWrap(message, 315, 110, size, 475 );
+                ctx.closePath();
+            }
+            // found at https://stackoverflow.com/questions/5026961/html5-canvas-ctx-filltext-wont-do-line-breaks 
+            function printAtWordWrap(text, x, y, lineHeight, fitWidth)
+            {
+                fitWidth = fitWidth || 0;
+
+                if (fitWidth <= 0) { ctx.fillText( text, x, y ); return; } var words=text.split(' ');
+                    var currentLine = 0;
+                    var idx = 1;
+                    while (words.length > 0 && idx <= words.length)
+                    {
+                        var str = words.slice(0,idx).join(' ');
+                        var w = ctx.measureText(str).width;
+                        if ( w > fitWidth )
+                        {
+                            if (idx==1)
+                            {
+                                idx=2;
+                            }
+                            ctx.fillText( words.slice(0,idx-1).join(' '), x, y + (lineHeight*currentLine) );
+                            currentLine++;
+                            words = words.splice(idx-1);
+                            idx = 1;
+                        }
+                        else
+                        {idx++;}
+                    }
+                    if  (idx > 0)
+                        ctx.fillText( words.join(' '), x, y + (lineHeight*currentLine) );
+                }
+    </script>
+</head>
+
+<body onload='initialize()'>
+    <canvas id='animation' width='1400px' height='800px'> </canvas>
+</body>
+
+</html>

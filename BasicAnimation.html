@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+        <title>HTML Canvas Animation</title>
+        <script>
+            //variable declarations
+            var canvas, ctx;
+            var x;
+            var timing;
+
+            function initialize(){
+               canvas=document.getElementById('animation');
+                ctx=canvas.getContext('2d');
+
+                x=30;
+                timing=0;
+
+                update();
+
+            }
+            function update(){
+                timing++;
+
+                if(x<200){
+                    x++;
+                }
+                requestAnimationFrame(update);
+                draw();
+             }
+            function draw(){
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+
+                ctx.beginPath();
+                   ctx.rect(0, 0, 20, 20);
+                   ctx.fillStyle="red";
+                    if(timing<300){
+	                    ctx.fill();
+                    }
+                ctx.closePath();
+            }
+        </script>
+    </head>
+    <body onload='initialize()'>
+        <canvas id='animation' width='400px' height='300px'> </canvas>
+    </body>
+</html>

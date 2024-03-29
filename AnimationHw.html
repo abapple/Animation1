@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HTML Canvas Animation</title>
+    <script>
+        //variable declarations
+            var canvas, ctx;
+            var timer;
+            var man = new Image();
+            man.src='walkingMan.png';
+            var manX, manY;
+            var woman = new Image();
+            woman.src='woman.png';
+            var womanX, womanY;
+            function initialize(){
+                canvas=document.getElementById('animation');
+                ctx=canvas.getContext('2d');
+
+                manX=0;
+                manY=90;
+                womanX=300;
+                womanY=90;
+
+                timer = 0;
+
+                update();
+            }
+            function update(){
+               timer++;
+               if(womanX>200){
+                   womanX--;
+               }
+               if(manX<100 && timer>120){
+                   manX++;
+               }
+               
+                requestAnimationFrame(update);
+                draw();
+
+             }
+            function draw(){
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+
+                ctx.beginPath();
+	                ctx.drawImage(woman, womanX,womanY,75,95 );
+	                ctx.drawImage(man, manX,manY,75,95 );
+                ctx.closePath();
+
+                if(timer>240){
+                   ctx.beginPath();
+                    ctx.fillStyle="black";
+                     ctx.font="16px Comic Sans";
+                     ctx.fillText("Man: Hello!", 100, 50);
+                    ctx.closePath();
+                }
+               
+             
+
+                if(timer>380){
+                    ctx.beginPath();
+                    ctx.strokeStyle="black";
+                     ctx.font="16px Times New Roman";
+                     ctx.strokeText("Woman: Hi!", 200, 50);
+                ctx.closePath(); 
+                }
+
+               
+            }
+    </script>
+</head>
+
+<body onload='initialize()'>
+    <canvas id='animation' width='400px' height='300px'> </canvas>
+</body>
+
+</html>
